@@ -4,15 +4,25 @@ This library is a simplified and improved version of Beckhoff Java library from 
 # Functions
 
 :one: `String getAdsVersion();`
-Returns the version of the connected ADS-router
+
+Returns the version string of the ADS-router
+
+---
      
 :two: `boolean isConnected();`
+
 Returns `true`, if is connected to the ADS-router, otherwise `false`
-     
-`String getAddress();`
+
+---
+  
+:three: `String getAddress();`
+
 Return the address of the ADS-router as a string
+
+---
  
-`long openPort(boolean localNetAddr, String txtNetString, int Prt);`
+:four: `long openPort(boolean localNetAddr, String txtNetString, int Prt);`
+
 Connect to the ADS-router.
    
 **Parameters**:
@@ -22,110 +32,161 @@ Connect to the ADS-router.
     
 **Return**
      Port number, assigned from ADS-Router to the connection
+     
+---
 
-`void closePort();`
+:five: `void closePort();`
+
 Close current connection
+
+---
       
-`void plcStart();`
+:six: `void plcStart();`
+
 Start the PLC on ADS-router
+
+---
 	 
-`void plcStop();`
+:seven: `void plcStop();`
+
 Stop the PLC on ADS-router
+
+---
       
-`void readState(AdsState adsStateBuff, AdsState devStateBuff)`
+:eight: `void readState(AdsState adsStateBuff, AdsState devStateBuff)`
+
 Read the ADS- and device status from ADS-router
     
 **Parameters**
     - *adsStateBuff*		The buffer to store ADS status
     - *devStateBuff*		The buffer to store device status
+    
+---
        
-`void readDeviceInfo(AdsDevName devName, AdsVersion adsVersion);`
+:nine: `void readDeviceInfo(AdsDevName devName, AdsVersion adsVersion);`
+
 Read name and version of an ADS device
       
 **Parameters**
     - *devName*			The buffer to store name of the ADS device
     - *adsVersion*		The buffer to store version of the ADS device
+    
+---
 	 
-`void writeControl(int adsState, int devState, JNIByteBuffer databuff);`
+:one::zero: `void writeControl(int adsState, int devState, JNIByteBuffer databuff);`
+
 Change the ADS- and device status
     
 **Parameters**
     - *adsState*		The ADS state to set
     - *devState*		The device state to set
     - *databuff*		The data to send to device
+    
+---
        
-`void setAdsTimeout(long adsTimeout)`
+:one::one: `void setAdsTimeout(long adsTimeout)`
+
 Change timeout for all ADS functions (5000 ms by default)
     
 **Parameters**
     - *adsTimeout*		Timeout to set
 
-`void readByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs);`
+---
+
+:one::two: `void readByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs);`
+
 Read data synchrony from ADS-router by given IndexGroup and IndexOffset
     
 **Parameters**
     - *databuff*		The buffer to store readed data
     - *lj_idxGrp*		IndexGroup
     - *lj_idxOffs*		IndexOffset
-       
-`void writeByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs);`
+
+---
+
+:one::three: `void writeByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs);`
+
 Write data synchrony to ADS-router by given IndexGroup and IndexOffset
 
 **Parameters**
     - *databuff*		A data to write
     - *lj_idxGrp*		IndexGroup
     - *lj_idxOffs*		IndexOffset
-	 
-`void getHandleBySymbol(JNIByteBuffer hdlbuff, JNIByteBuffer symbuff);`
+
+---
+
+:one::four: `void getHandleBySymbol(JNIByteBuffer hdlbuff, JNIByteBuffer symbuff);`
+
 Read handle by symbol name (symbol like "MAIN.iCounter" name in symbuff) from PLC
 
 **Parameters**
     - *hdlbuff*			The buffer to store the handle
     - *symbuff*			The symbol name
-	 
-`void readByHandle(JNIByteBuffer databuff, long symHandle)`;
+
+---
+
+:one::five: `void readByHandle(JNIByteBuffer databuff, long symHandle)`;
+
 Read a variable from PLC by handle
 
 **Parameters**
     - *databuff*		The buffer to store readed value
     - *symHandle*		The handle of the symbol
-	 
-`writeByHandle(JNIByteBuffer databuff, long symHandle);`
+
+---
+
+:one::six: `writeByHandle(JNIByteBuffer databuff, long symHandle);`
+
 Store a variable into PLC by symbol handle
 
 **Parameters**
     - *databuff*		The buffer with a variable
     - *symHandle*		The handle of the symbol
-	 
-`void readBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff);`
+
+---
+
+:one::seven: `void readBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff);`
+
 Read a variable by symbol name (symbol like "MAIN.iCounter" name in symbuff)
 
 **Parameters**
     - *databuff*		The buffer to store variable
     - *symbuff*			The name of the symbol
-	 
-`void writeBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff);`
+
+---
+
+:one::eight: `void writeBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff);`
+
 Write variable by symbol name
 
 **Parameters**
     - *databuff*		The data to write
     - *symbuff*			Symbol name
-	 
-`void writeFloatValue(String symbolName, float floatValue);`
+
+---
+
+:one::nine: `void writeFloatValue(String symbolName, float floatValue);`
+
 Set the real value by symbol name
 
 **Parameters**
     - *symbolName*		Symbol name
     - *floatValue*		Float value to write
-	 
-`void writeBooleanValue(String symbolName, boolean boolValue);`
+
+---
+
+:two::zero: `void writeBooleanValue(String symbolName, boolean boolValue);`
+
 Set the boolean value by symbol name
 
 **Parameters**
     - *symbolName*		Symbol name
     - *boolValue*		Boolean value to write
-	 
-`float readFloatValue(String symbolName);`
+
+---
+
+:two::one: `float readFloatValue(String symbolName);`
+
 Read real value from PLC by symbol name
 
 **Parameters**
@@ -133,8 +194,11 @@ Read real value from PLC by symbol name
     
 **Return**
     The readed from PLC value
-	 
-`boolean readBooleanValue(String symbolName);`
+
+---
+
+:two::two: `boolean readBooleanValue(String symbolName);`
+
 Read boolean value from PLC by symbol name
 
 **Parameters**
@@ -144,13 +208,16 @@ Read boolean value from PLC by symbol name
     -  * @return boolean value from PLC
 	 * @throws AdsException 
 	 */
-	 
-- getPlcStateString(int adsState)
-/**
-	 * Return the ADS-Status as string
-	 * 
-	 * @return the ADS-Status
-	 */
+
+---
+
+:two::three: `String getPlcStateString(int adsState);`
+
+Return the ADS-Status as string
+
+**Return**
+The ADS status as a string
+
 
 ## Exceptions
        
