@@ -1,207 +1,147 @@
-# Java Beckhoff library
-This library is a simplified and improved version of Beckhoff Java library from [Using the AdsToJava.dll](https://infosys.beckhoff.com/content/1033/tcsample_java/html/tcjavatoads_sample01.html?id=5603283073250120314)
+# Java Beckhoff SPS library
+This library is a simplified and improved version of Beckhoff Java library from [Using the AdsToJava.dll](https://infosys.beckhoff.com/content/1033/tcsample_java/html/tcjavatoads_sample01.html?id=5603283073250120314). This library can be used instead of the Beckhoffs `CallAdsFuncs.java`, is compatible with all Beckhoffs examples and adds some user-friendly features.
 
 # Functions
 
- - String getAdsVersion();
-     Returns the version of the ADS-router
+:one: `String getAdsVersion();`
+Returns the version of the connected ADS-router
      
- - boolean isConnected();
-     Return true, if connected to ADS-Server, otherwise false
+:two: `boolean isConnected();`
+Returns `true`, if is connected to the ADS-router, otherwise `false`
      
- - String getAddress();
-     Return connection address as a string
+`String getAddress();`
+Return the address of the ADS-router as a string
  
- - long openPort(boolean localNetAddr, String txtNetString, int Prt) throws AdsException;
-   Connect to TWINCat Message Router.
+`long openPort(boolean localNetAddr, String txtNetString, int Prt);`
+Connect to the ADS-router.
    
-   Parameters:
-    - localNetAddr Use local address, if true
-    - txtNetString Router address (if localNetAddr = false)
-    - Prt Port number
+**Parameters**:
+   - *localNetAddr*	If = true, will be used localhost address to connection
+   - *txtNetString*	Connection address (will be used if `localNetAddr = false`)
+   - *prt*		Port number
     
-   Return:
-     Port number, assigned from ADS-Router to the programm
+**Return**
+     Port number, assigned from ADS-Router to the connection
 
-   Throws: 
-     AdsException if connection failed
-	 
-
-- void closePort() throws AdsException
-    Close connection to TWINCat Message Router
-    
-    Throws:
-      AdsException If failed close connection
+`void closePort();`
+Close current connection
       
-- void readState(AdsState adsStateBuff, AdsState devStateBuff) throws AdsException
-    Read the ADS- and Device-Status from ADS-Server
-    
-    Parameters:
-       - adsStateBuff Buffer to store ADS-Status
-       - devStateBuff Buffer to store Device-Status
-       
-    Throws:
-       - AdsException If failed
-       
- - void readDeviceInfo(AdsDevName devName, AdsVersion adsVersion) throws AdsException
-      Read name and version for ADS-Device from ADS-Server
+`void plcStart();`
+Start the PLC on ADS-router
+	 
+`void plcStop();`
+Stop the PLC on ADS-router
       
-      Parameters:
-         - devName Buffer to store name of the ADS-Device
-	 - adsVersion Buffer to store version of the ADSDevice
+`void readState(AdsState adsStateBuff, AdsState devStateBuff)`
+Read the ADS- and device status from ADS-router
+    
+**Parameters**
+    - *adsStateBuff*		The buffer to store ADS status
+    - *devStateBuff*		The buffer to store device status
+       
+`void readDeviceInfo(AdsDevName devName, AdsVersion adsVersion);`
+Read name and version of an ADS device
+      
+**Parameters**
+    - *devName*			The buffer to store name of the ADS device
+    - *adsVersion*		The buffer to store version of the ADS device
 	 
-- void writeControl(int adsState, int devState, JNIByteBuffer databuff) throws AdsException;
-    Change the ADS- and Device-Status from the ADS-Server
+`void writeControl(int adsState, int devState, JNIByteBuffer databuff);`
+Change the ADS- and device status
     
-    Parameters:
-       - adsState New ADS-Status
-       - devState New Device-Status
-       - databuff Data to send to device
+**Parameters**
+    - *adsState*		The ADS state to set
+    - *devState*		The device state to set
+    - *databuff*		The data to send to device
        
-- void setAdsTimeout(long adsTimeout) throws AdsException
-    Change timeout for ADS-Functions (5000ms by default)
+`void setAdsTimeout(long adsTimeout)`
+Change timeout for all ADS functions (5000 ms by default)
     
-    Parameters:
-       - adsTimeout New timeout value
-       
-    Throws:
-       - AdsException If failed
+**Parameters**
+    - *adsTimeout*		Timeout to set
 
-- void readByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs) throws AdsException
-    Read data synchrony from ADS-Server by given IndexGroup and IndexOffset
+`void readByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs);`
+Read data synchrony from ADS-router by given IndexGroup and IndexOffset
     
-    Parameters:
-       - databuff Buffer to store readed data
-       - lj_idxGrp IndexGroup
-       - lj_idxOffs IndexOffset
+**Parameters**
+    - *databuff*		The buffer to store readed data
+    - *lj_idxGrp*		IndexGroup
+    - *lj_idxOffs*		IndexOffset
        
-    Throws:
-       - AdsException If failed
-       
-- void writeByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs) throws AdsException;
-	/**
-	 * Write data synchrony to ADS-Device by given IndexGroup and IndexOffset
-	 * 
-	 * @param databuff Data to write
-	 * @param lj_idxGrp IndexGroup
-	 * @param lj_idxOffs IndexOffset
-	 * 
-	 * @throws AdsException 
-	 */
+`void writeByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs);`
+Write data synchrony to ADS-router by given IndexGroup and IndexOffset
+
+**Parameters**
+    - *databuff*		A data to write
+    - *lj_idxGrp*		IndexGroup
+    - *lj_idxOffs*		IndexOffset
 	 
--  void getHandleBySymbol(JNIByteBuffer hdlbuff, JNIByteBuffer symbuff) throws AdsException
-/**
-	 * Read handle by symbol name (symbol like "MAIN.iCounter" name in symbuff) from ADS-Device
-	 * 
-	 * @param hdlbuff Buffer to store the handle
-	 * @param symbuff Symbol name
-	 * 
-	 * @throws AdsException If failed 
-	 */
+`void getHandleBySymbol(JNIByteBuffer hdlbuff, JNIByteBuffer symbuff);`
+Read handle by symbol name (symbol like "MAIN.iCounter" name in symbuff) from PLC
+
+**Parameters**
+    - *hdlbuff*			The buffer to store the handle
+    - *symbuff*			The symbol name
 	 
-- void readByHandle(JNIByteBuffer databuff, long symHandle) throws AdsException
-  Read variable by handle
-  
-  /**
-	 * 
-	 * 
-	 * @param databuff Buffer to store readed value
-	 * @param symHandle Symbol handle
-	 *
-	 * @throws AdsException If failed
-	 */
+`void readByHandle(JNIByteBuffer databuff, long symHandle)`;
+Read a variable from PLC by handle
+
+**Parameters**
+    - *databuff*		The buffer to store readed value
+    - *symHandle*		The handle of the symbol
 	 
-- writeByHandle(JNIByteBuffer databuff, long symHandle) throws AdsException
-   Write variable by handle
-   
-   /**
-	 * 
-	 * 
-	 * @param databuff Buffer to write
-	 * @param symHandle Symbol handle
-	 * 
-	 * @throws AdsException If failed
-	 */
+`writeByHandle(JNIByteBuffer databuff, long symHandle);`
+Store a variable into PLC by symbol handle
+
+**Parameters**
+    - *databuff*		The buffer with a variable
+    - *symHandle*		The handle of the symbol
 	 
-- void readBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff) throws AdsException
-    Read variable by symbol name (symbol like "MAIN.iCounter" name in symbuff)
+`void readBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff);`
+Read a variable by symbol name (symbol like "MAIN.iCounter" name in symbuff)
+
+**Parameters**
+    - *databuff*		The buffer to store variable
+    - *symbuff*			The name of the symbol
+	 
+`void writeBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff);`
+Write variable by symbol name
+
+**Parameters**
+    - *databuff*		The data to write
+    - *symbuff*			Symbol name
+	 
+`void writeFloatValue(String symbolName, float floatValue);`
+Set the real value by symbol name
+
+**Parameters**
+    - *symbolName*		Symbol name
+    - *floatValue*		Float value to write
+	 
+`void writeBooleanValue(String symbolName, boolean boolValue);`
+Set the boolean value by symbol name
+
+**Parameters**
+    - *symbolName*		Symbol name
+    - *boolValue*		Boolean value to write
+	 
+`float readFloatValue(String symbolName);`
+Read real value from PLC by symbol name
+
+**Parameters**
+    - *symbolName*		Symbol name
     
-    
-	/**
-	 * 
-	 * 
-	 * @param databuff Buffer to store variable
-	 * @param symbuff Symbol name
-	 * 
-	 * @throws AdsException If failed
-	 */
+**Return**
+    The readed from PLC value
 	 
--  void writeBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff) throws AdsException;
-    Write variable by symbol name
-    
-    
-	/**
-	 * 
-	 * 
-	 * @param databuff Data to write
-	 * @param symbuff Symbol name
-	 * 
-	 * @return
-	 * @throws AdsException If failed
-	 */
-	 
-- void plcStart() throws AdsException;
-/**
-	 * Start the PLC
-	 * 
-	 * @throws AdsException 
-	 */
-	 
-- void plcStop() throws AdsException;
-/**
-	 * Stop the PLC
-	 * 
-	 * @throws AdsException 
-	 */
-	 
-- void writeFloatValue(String symbolName, float floatValue) throws AdsException;
-/**
-	 * Set the real value by symbol name
-	 * 
-	 * @param symbolName Symbol name
-	 * @param floatValue Float value to write
-	 * @throws AdsException 
-	 */
-	 
-- void writeBooleanValue(String symbolName, boolean boolValue) throws AdsException
-/**
-	 * Set the boolean value by symbol name
-	 * 
-	 * @param symbolName Symbol name
-	 * @param boolValue Boolean value to write
-	 * @throws AdsException 
-	 */
-	 
-- float readFloatValue(String symbolName) throws AdsException
-/**
-	 * Read real value from PLC by symbol name
-	 * 
-	 * @param symbolName Symbol name
-	 * 
-	 * @return real value from PLC
-	 * @throws AdsException
-	 */
-	 
-- boolean readBooleanValue(String symbolName) throws AdsException
+`boolean readBooleanValue(String symbolName);`
 Read boolean value from PLC by symbol name
 
-
-	/**
-	 * 
-	 * 
-	 * @param symbolName Symbol name
-	 * 
-	 * @return boolean value from PLC
+**Parameters**
+    - *symbolName*		Symbol name
+    
+**Return**
+    -  * @return boolean value from PLC
 	 * @throws AdsException 
 	 */
 	 
