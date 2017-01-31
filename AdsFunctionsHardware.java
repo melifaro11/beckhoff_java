@@ -1,3 +1,21 @@
+/**
+ * Copyright 2016-2017 Alexandr Mitiaev
+ * 
+ * This file is part of Beckhoff ADS library.
+ * 
+ * Beckhoff ADS library is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Beckhoff ADS library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Beckhoff ADS library. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.whz.research.tempcontrol.sps;
 
 import de.beckhoff.jni.Convert;
@@ -5,42 +23,40 @@ import de.beckhoff.jni.JNIByteBuffer;
 import de.beckhoff.jni.tcads.*;
 
 /**
- * Adapter class for access to ADS-Router via native DLLs
- * 
- * @author Alexandr Mitiaev
+ * Adapter class for access to an ADS router via native Beckhoffs dll AdsToJava.dll
  */
-public class AdsFunctionsHardware implements AdsFunctions {
+public class AdsFunctions {
 	
 	/**
-	 * Buffer size for a float-value in PLC
+	 * The size of a float value in PLC
 	 */
 	private static final int BUFFERSIZE_FLOAT = 4;
 	
 	/**
-	 * Buffer size for a boolean-value in PLC
+	 * The size of a boolean value in PLC
 	 */
 	private static final int BUFFERSIZE_BOOLEAN = 1;
 	
 	/**
-	 * Port number, assigned from ADS-Router
+	 * Port number, assigned from the ADS router
 	 */
 	private long port = 0;
 
 	/**
-	 * The {@link AmsAddr} of ADS-Router
+	 * The {@link AmsAddr} of the ADS router
 	 */
 	private AmsAddr addr = new AmsAddr();
 
 	/**
-	 * Create new {@link AdsFunctionsHardware} object
+	 * Default constructor
 	 */
 	public AdsFunctionsHardware() {
 	}
 
 	/**
-	 * Returns version of the ADS-library
+	 * Returns the version of the ADS dll-library
 	 * 
-	 * @return version of the ADS-library
+	 * @return The version of the ADS dll library
 	 */
 	public String getAdsVersion() {
 
@@ -462,7 +478,7 @@ public class AdsFunctionsHardware implements AdsFunctions {
 		case AdsState.ADSSTATE_STOP:
 			return "stop";
 		default:
-			return "unknown (" + adsState + ")";
+			return "unknown state (" + adsState + ")";
 		}
 	}
 }
