@@ -3,174 +3,82 @@ This library is a simplified and improved version of Beckhoff Java library from 
 
 # Functions
 
- Function                            |        Description
- ---------------------------------------------------------------------------------------
- ```java
- String getAdsVersion();
- ```                                 | Returns the version of the ADS-router
- ```java
- boolean isConnected();
- ```                                 | Return true, if connected to ADS-Server
+ - String getAdsVersion();
+     Returns the version of the ADS-router
+     
+ - boolean isConnected();
+     Return true, if connected to ADS-Server, otherwise false
+     
+ - String getAddress();
+     Return connection address as a string
+ 
+ - long openPort(boolean localNetAddr, String txtNetString, int Prt) throws AdsException;
+   Connect to TWINCat Message Router.
+   
+   Parameters:
+    - localNetAddr Use local address, if true
+    - txtNetString Router address (if localNetAddr = false)
+    - Prt Port number
+    
+   Return:
+     Port number, assigned from ADS-Router to the programm
 
-	/**
-	 * Return connection address as String
-	 * 
-	 * @return Connection address
-	 */
-	public String getAddress() {
-		return addr.getNetIdString() + ":" + addr.getPort();
-	}
+   Throws: 
+     AdsException if connection failed
+	 
 
-	/**
-	 * Connect to TWINCat Message Router
-	 * 
-	 * @param localNetAddr Use local address, if true
-	 * @param txtNetString Router address (if localNetAddr = false)
-	 * @param Prt Port number (???)
-	 * 
-	 * @return Port number, assigned from ADS-Router to the programm
-	 * 
-	 * @throws AdsException if connection failed
-	 */
-	public long openPort(boolean localNetAddr, String txtNetString, int Prt) throws AdsException {
+- void closePort() throws AdsException
+    Close connection to TWINCat Message Router
+    
+    Throws:
+      AdsException If failed close connection
+      
+- void readState(AdsState adsStateBuff, AdsState devStateBuff) throws AdsException
+    Read the ADS- and Device-Status from ADS-Server
+    
+    Parameters:
+       - adsStateBuff Buffer to store ADS-Status
+       - devStateBuff Buffer to store Device-Status
+       
+    Throws:
+       - AdsException If failed
+       
+ - void readDeviceInfo(AdsDevName devName, AdsVersion adsVersion) throws AdsException
+      Read name and version for ADS-Device from ADS-Server
+      
+      Parameters:
+         - devName Buffer to store name of the ADS-Device
+	 - adsVersion Buffer to store version of the ADSDevice
+	 
+- void writeControl(int adsState, int devState, JNIByteBuffer databuff) throws AdsException;
+    Change the ADS- and Device-Status from the ADS-Server
+    
+    Parameters:
+       - adsState New ADS-Status
+       - devState New Device-Status
+       - databuff Data to send to device
+       
+- void setAdsTimeout(long adsTimeout) throws AdsException
+    Change timeout for ADS-Functions (5000ms by default)
+    
+    Parameters:
+       - adsTimeout New timeout value
+       
+    Throws:
+       - AdsException If failed
 
-		if (port == 0) {
-
-			port = AdsCallDllFunction.adsPortOpen();
-
-			if (localNetAddr == true) {
-				addr.setNetIdStringEx(txtNetString);
-			} else {
-				long nErr = AdsCallDllFunction.getLocalAddress(addr);
-
-				if (nErr != 0) {
-					AdsCallDllFunction.adsPortClose();
-					throw new AdsException("openPort() -> getLocalAddress() failed with code: " + nErr);
-				}
-			}
-			
-			addr.mPort = Prt;
-		}
-
-		return port;
-	}
-
-	/**
-	 * Close connection to TWINCat Message Router
-	 * 
-	 * @throws AdsException If failed close connection
-	 */
-	public synchronized void closePort() throws AdsException {
-		if (port != 0) {
-		
-			long nErr = AdsCallDllFunction.adsPortClose();
-
-			port = 0;
-
-			if (nErr != 0)
-				throw new AdsException((int)nErr, "closePort() failed with code: " + nErr);
-		}
-	}
-
-	/**
-	 * Read the ADS- and Device-Status from ADS-Server
-	 * 
-	 * @param adsStateBuff Buffer to store ADS-Status
-	 * @param devStateBuff Buffer to store Device-Status
-	 * 
-	 * @return
-	 * 
-	 * @throws AdsException If failed
-	 */
-	public synchronized void readState(AdsState adsStateBuff, AdsState devStateBuff) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "readState() failed: ADS-Port not opened");
-		
-		long nErr = AdsCallDllFunction.adsSyncReadStateReq(addr, adsStateBuff, devStateBuff);
-
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "readState() failed with code: " + nErr);
-	}
-
-	/**
-	 * Read name and version for ADS-Device from ADS-Server
-	 * 
-	 * @param devName Buffer to store name of the ADS-Device
-	 * @param adsVersion Buffer to store version of the ADSDevice
-	 *
-	 * @throws AdsException 
-	 */
-	public synchronized void readDeviceInfo(AdsDevName devName, AdsVersion adsVersion) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-
-		long nErr = AdsCallDllFunction.adsSyncReadDeviceInfoReq(addr, devName, adsVersion);
-		
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "readDeviceInfo() failed with code: " + nErr);
-	}
-
-	/**
-	 * Change the ADS- and Device-Status from the ADS-Server
-	 * 
-	 * @param adsState New ADS-Status
-	 * @param devState New Device-Status
-	 * @param databuff Data to send to device
-	 *
-	 * @throws AdsException If failed
-	 */
-	public synchronized void writeControl(int adsState, int devState, JNIByteBuffer databuff) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-		
-		long nErr = AdsCallDllFunction.adsSyncWriteControlReq(addr, adsState, devState, databuff.getUsedBytesCount(),
-					databuff);
-
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "writeControl() failed with code: " + nErr);
-	}
-
-	/**
-	 * Change timeout for ADS-Functions (5000ms by default)
-	 * 
-	 * @param adsTimeout New timeout value
-	 * @throws AdsException If failed
-	 */
-	public synchronized void setAdsTimeout(long adsTimeout) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-		
-		long nErr = AdsCallDllFunction.adsSyncSetTimeout(adsTimeout);
-		
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "setAdsTimeout() failed with code: " + nErr);
-	}
-
-	/**
-	 * Read data synchrony from ADS-Server by given IndexGroup and IndexOffset
-	 * 
-	 * @param databuff Buffer to store readed data
-	 * @param lj_idxGrp IndexGroup
-	 * @param lj_idxOffs IndexOffset
-	 * 
-	 * @throws AdsException If failed
-	 */
-	public synchronized void readByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-		
-		long nErr = AdsCallDllFunction.adsSyncReadReq(addr, lj_idxGrp, lj_idxOffs, databuff.getUsedBytesCount(),
-					databuff);
-		
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "readByIGrpOffs() failed with code: " + nErr);
-	}
-
+- void readByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs) throws AdsException
+    Read data synchrony from ADS-Server by given IndexGroup and IndexOffset
+    
+    Parameters:
+       - databuff Buffer to store readed data
+       - lj_idxGrp IndexGroup
+       - lj_idxOffs IndexOffset
+       
+    Throws:
+       - AdsException If failed
+       
+- void writeByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs) throws AdsException;
 	/**
 	 * Write data synchrony to ADS-Device by given IndexGroup and IndexOffset
 	 * 
@@ -180,19 +88,9 @@ This library is a simplified and improved version of Beckhoff Java library from 
 	 * 
 	 * @throws AdsException 
 	 */
-	public synchronized void writeByIGrpOffs(JNIByteBuffer databuff, long lj_idxGrp, long lj_idxOffs) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-
-		long nErr = AdsCallDllFunction.adsSyncWriteReq(addr, lj_idxGrp, lj_idxOffs, databuff.getUsedBytesCount(),
-					databuff);
-		
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "readByIGrpOffs() failed with code: " + nErr);
-	}
-
-	/**
+	 
+-  void getHandleBySymbol(JNIByteBuffer hdlbuff, JNIByteBuffer symbuff) throws AdsException
+/**
 	 * Read handle by symbol name (symbol like "MAIN.iCounter" name in symbuff) from ADS-Device
 	 * 
 	 * @param hdlbuff Buffer to store the handle
@@ -200,86 +98,50 @@ This library is a simplified and improved version of Beckhoff Java library from 
 	 * 
 	 * @throws AdsException If failed 
 	 */
-	public synchronized void getHandleBySymbol(JNIByteBuffer hdlbuff, JNIByteBuffer symbuff) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-
-		long nErr = AdsCallDllFunction.adsSyncReadWriteReq(addr, 0xF003, 0x0, hdlbuff.getUsedBytesCount(), hdlbuff,
-						symbuff.getUsedBytesCount(), symbuff);
-		
-		if (nErr != 0)
-			throw new AdsException((int)nErr, "getHandleBySymbol() failed with code: " + nErr);
-
-	}
-
-	/**
-	 * Read variable by handle
+	 
+- void readByHandle(JNIByteBuffer databuff, long symHandle) throws AdsException
+  Read variable by handle
+  
+  /**
+	 * 
 	 * 
 	 * @param databuff Buffer to store readed value
 	 * @param symHandle Symbol handle
 	 *
 	 * @throws AdsException If failed
 	 */
-	public synchronized void readByHandle(JNIByteBuffer databuff, long symHandle) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-
-			if (symHandle != 0) {
-				long nErr = AdsCallDllFunction.adsSyncReadReq(addr, 0xF005, symHandle, databuff.getUsedBytesCount(),
-						databuff);
-				
-				if (nErr != 0)
-					throw new AdsException((int)nErr, "readByHandle() failed with code: " + nErr);
-			}
-			else
-				throw new AdsException(1809, "Invalid symbol handle");
-	}
-
-	/**
-	 * Write variable by handle
+	 
+- writeByHandle(JNIByteBuffer databuff, long symHandle) throws AdsException
+   Write variable by handle
+   
+   /**
+	 * 
 	 * 
 	 * @param databuff Buffer to write
 	 * @param symHandle Symbol handle
 	 * 
 	 * @throws AdsException If failed
 	 */
-	public synchronized void writeByHandle(JNIByteBuffer databuff, long symHandle) throws AdsException {
-
-		if (port == 0)
-			throw new AdsException(1864, "ADS-Port not opened");
-
-			if (symHandle != 0) {
-				long nErr = AdsCallDllFunction.adsSyncWriteReq(addr, 0xF005, symHandle, databuff.getUsedBytesCount(),
-						databuff);
-				if (nErr != 0)
-					throw new AdsException((int)nErr, "readByHandle() failed with code: " + nErr);
-			}
-			else
-				throw new AdsException(1809, "Invalid symbol handle");
-	}
-
+	 
+- void readBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff) throws AdsException
+    Read variable by symbol name (symbol like "MAIN.iCounter" name in symbuff)
+    
+    
 	/**
-	 * Read variable by symbol name (symbol like "MAIN.iCounter" name in symbuff)
+	 * 
 	 * 
 	 * @param databuff Buffer to store variable
 	 * @param symbuff Symbol name
 	 * 
 	 * @throws AdsException If failed
 	 */
-	public synchronized void readBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff) throws AdsException {
-		JNIByteBuffer hdlbuff = new JNIByteBuffer(4);
-
-		getHandleBySymbol(hdlbuff, symbuff);
-
-		long symHandle = Convert.ByteArrToInt(hdlbuff.getByteArray());
-
-		readByHandle(databuff, symHandle);
-	}
-
+	 
+-  void writeBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff) throws AdsException;
+    Write variable by symbol name
+    
+    
 	/**
-	 * Write variable by symbol name
+	 * 
 	 * 
 	 * @param databuff Data to write
 	 * @param symbuff Symbol name
@@ -287,65 +149,41 @@ This library is a simplified and improved version of Beckhoff Java library from 
 	 * @return
 	 * @throws AdsException If failed
 	 */
-	public synchronized void writeBySymbol(JNIByteBuffer databuff, JNIByteBuffer symbuff) throws AdsException {
-		JNIByteBuffer hdlbuff = new JNIByteBuffer(4);
-		
-		getHandleBySymbol(hdlbuff, symbuff);
-
-		long symHandle = Convert.ByteArrToInt(hdlbuff.getByteArray());
-
-		writeByHandle(databuff, symHandle);
-	}
-	
-	/**
+	 
+- void plcStart() throws AdsException;
+/**
 	 * Start the PLC
 	 * 
 	 * @throws AdsException 
 	 */
-	public synchronized void plcStart() throws AdsException {
-		writeControl(AdsState.ADSSTATE_RUN, 0, new JNIByteBuffer(0));
-	}
-	
-	/**
+	 
+- void plcStop() throws AdsException;
+/**
 	 * Stop the PLC
 	 * 
 	 * @throws AdsException 
 	 */
-	public synchronized void plcStop() throws AdsException {
-		writeControl(AdsState.ADSSTATE_STOP, 0, new JNIByteBuffer(0));
-	}
-
-	/**
+	 
+- void writeFloatValue(String symbolName, float floatValue) throws AdsException;
+/**
 	 * Set the real value by symbol name
 	 * 
 	 * @param symbolName Symbol name
 	 * @param floatValue Float value to write
 	 * @throws AdsException 
 	 */
-	public synchronized void writeFloatValue(String symbolName, float floatValue) throws AdsException {
-
-		JNIByteBuffer databuff = new JNIByteBuffer(Convert.FloatToByteArr(floatValue));
-
-		writeBySymbol(databuff, new JNIByteBuffer(symbolName.getBytes()));
-	}
-	
-	/**
+	 
+- void writeBooleanValue(String symbolName, boolean boolValue) throws AdsException
+/**
 	 * Set the boolean value by symbol name
 	 * 
 	 * @param symbolName Symbol name
 	 * @param boolValue Boolean value to write
 	 * @throws AdsException 
 	 */
-	public synchronized void writeBooleanValue(String symbolName, boolean boolValue) throws AdsException {
-
-		JNIByteBuffer symbuff = new JNIByteBuffer(symbolName.getBytes());
-		
-		JNIByteBuffer databuff = new JNIByteBuffer(Convert.BoolToByteArr(boolValue));
-
-		writeBySymbol(databuff, symbuff);
-	}
-	
-	/**
+	 
+- float readFloatValue(String symbolName) throws AdsException
+/**
 	 * Read real value from PLC by symbol name
 	 * 
 	 * @param symbolName Symbol name
@@ -353,37 +191,27 @@ This library is a simplified and improved version of Beckhoff Java library from 
 	 * @return real value from PLC
 	 * @throws AdsException
 	 */
-	public synchronized float readFloatValue(String symbolName) throws AdsException {
-		
-		JNIByteBuffer databuff = new JNIByteBuffer(BUFFERSIZE_FLOAT);
+	 
+- boolean readBooleanValue(String symbolName) throws AdsException
+Read boolean value from PLC by symbol name
 
-		readBySymbol(databuff, new JNIByteBuffer(symbolName.getBytes()));
 
-		return Convert.ByteArrToFloat(databuff.getByteArray());
-	}
-	
 	/**
-	 * Read boolean value from PLC by symbol name
+	 * 
 	 * 
 	 * @param symbolName Symbol name
 	 * 
 	 * @return boolean value from PLC
 	 * @throws AdsException 
 	 */
-	public synchronized boolean readBooleanValue(String symbolName) throws AdsException {
-
-		JNIByteBuffer databuff = new JNIByteBuffer(BUFFERSIZE_BOOLEAN);
-
-		readBySymbol(databuff, new JNIByteBuffer(symbolName.getBytes()));
-
-		return Convert.ByteArrToBool(databuff.getByteArray());
-	}
-	
-	/**
+	 
+- getPlcStateString(int adsState)
+/**
 	 * Return the ADS-Status as string
 	 * 
 	 * @return the ADS-Status
 	 */
-	public String getPlcStateString(int adsState) {
-		
-		if (adsState == -1)
+
+## Exceptions
+       
+The AdsException class enthaelt fehlernumber und errror text, wenn es moeglich ist
